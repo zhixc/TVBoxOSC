@@ -58,6 +58,21 @@
             android:text="删除记录"
             android:textColor="@android:color/white"
             android:textSize="@dimen/ts_24" />
+
+        <TextView
+            android:id="@+id/tvClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_user_focus"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:padding="@dimen/vs_10"
+            android:layout_marginLeft="@dimen/vs_20"
+            android:text="清空记录"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/ts_24" />
     </LinearLayout>
 
     <com.owen.tvrecyclerview.widget.TvRecyclerView

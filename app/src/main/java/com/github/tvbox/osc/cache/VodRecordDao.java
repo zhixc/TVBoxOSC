@@ -26,4 +26,7 @@ public interface VodRecordDao {
 
     @Delete
     int delete(VodRecord record);
+
+    @Query("DELETE FROM vodRecord")
+    void deleteAll();
 }
