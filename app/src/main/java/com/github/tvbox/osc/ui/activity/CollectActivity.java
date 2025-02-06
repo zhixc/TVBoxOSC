@@ -15,6 +15,7 @@ import com.github.tvbox.osc.cache.RoomDataManger;
 import com.github.tvbox.osc.cache.VodCollect;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.ui.adapter.CollectAdapter;
+import com.github.tvbox.osc.ui.dialog.ConfirmClearDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
@@ -28,9 +29,10 @@ import java.util.List;
 
 public class CollectActivity extends BaseActivity {
     private TextView tvDel;
+    private TextView tvClear;
     private TextView tvDelTip;
     private TvRecyclerView mGridView;
-    private CollectAdapter collectAdapter;
+    public static CollectAdapter collectAdapter;
     private boolean delMode = false;
 
     @Override
@@ -53,6 +55,7 @@ public class CollectActivity extends BaseActivity {
     private void initView() {
         EventBus.getDefault().register(this);
         tvDel = findViewById(R.id.tvDel);
+        tvClear = findViewById(R.id.tvClear);
         tvDelTip = findViewById(R.id.tvDelTip);
         mGridView = findViewById(R.id.mGridView);
         mGridView.setHasFixedSize(true);
@@ -65,11 +68,19 @@ public class CollectActivity extends BaseActivity {
                 toggleDelMode();
             }
         });
+        tvClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ConfirmClearDialog dialog = new ConfirmClearDialog(mContext, "Collect");
+                dialog.show();
+            }
+        });
         mGridView.setOnInBorderKeyEventListener(new TvRecyclerView.OnInBorderKeyEventListener() {
             @Override
             public boolean onInBorderKeyEvent(int direction, View focused) {
                 if (direction == View.FOCUS_UP) {
                     tvDel.setFocusable(true);
+                    tvClear.setFocusable(true);
                     tvDel.requestFocus();
                 }
                 return false;

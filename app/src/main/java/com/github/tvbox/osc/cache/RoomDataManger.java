@@ -136,4 +136,11 @@ public class RoomDataManger {
     public static List<VodCollect> getAllVodCollect() {
         return AppDataManager.get().getVodCollectDao().getAll();
     }
+
+    public static void deleteVodCollectAll() {
+        AppDataManager.get().getVodCollectDao().deleteAll();
+    }
+    public static void deleteVodRecordAll() {
+        AppDataManager.get().getVodRecordDao().deleteAll();
+    }
 }
