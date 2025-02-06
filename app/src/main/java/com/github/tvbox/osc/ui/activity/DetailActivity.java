@@ -27,6 +27,7 @@ import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.picasso.RoundTransformation;
 import com.github.tvbox.osc.ui.adapter.SeriesAdapter;
 import com.github.tvbox.osc.ui.adapter.SeriesFlagAdapter;
+import com.github.tvbox.osc.ui.dialog.DescDialog;
 import com.github.tvbox.osc.ui.dialog.QuickSearchDialog;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
@@ -73,6 +74,7 @@ public class DetailActivity extends BaseActivity {
     private TextView tvActor;
     private TextView tvDirector;
     private TextView tvDes;
+    private TextView tvDesc;
     private TextView tvPlay;
     private TextView tvSort;
     private TextView tvQuickSearch;
@@ -115,6 +117,7 @@ public class DetailActivity extends BaseActivity {
         tvActor = findViewById(R.id.tvActor);
         tvDirector = findViewById(R.id.tvDirector);
         tvDes = findViewById(R.id.tvDes);
+        tvDesc = findViewById(R.id.tvDesc);
         tvPlay = findViewById(R.id.tvPlay);
         tvSort = findViewById(R.id.tvSort);
         tvCollect = findViewById(R.id.tvCollect);
@@ -175,6 +178,20 @@ public class DetailActivity extends BaseActivity {
                         } catch (Throwable th) {
                             th.printStackTrace();
                         }
+                    }
+                });
+            }
+        });
+        tvDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FastClickCheckUtil.check(v);
+                        DescDialog dialog = new DescDialog(mContext);
+                        dialog.setDescribe(removeHtmlTag(mVideo.des));
+                        dialog.show();
                     }
                 });
             }
@@ -308,9 +325,8 @@ public class DetailActivity extends BaseActivity {
     }
 
     private String removeHtmlTag(String info) {
-        if (info == null)
-            return "";
-        return info.replaceAll("\\<.*?\\>", "").replaceAll("\\s", "");
+        if (info == null) return "";
+        return info.replaceAll("\\<.*?\\>", "");
     }
 
     private void initViewModel() {
