@@ -14,6 +14,7 @@ import com.github.tvbox.osc.bean.ParseBean;
 import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.server.ControlManager;
 import com.github.tvbox.osc.util.AdBlocker;
+import com.github.tvbox.osc.util.ApiHelper;
 import com.github.tvbox.osc.util.DefaultConfig;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.MD5;
@@ -92,11 +93,10 @@ public class ApiConfig {
                 th.printStackTrace();
             }
         }
-        String apiFix = apiUrl;
-        if (apiUrl.startsWith("clan://")) {
-            apiFix = clanToAddress(apiUrl);
-        }
-        OkGo.<String>get(apiFix)
+        String[] configUrlAndKey = ApiHelper.getConfigUrlAndKey(apiUrl);
+        String configUrl = configUrlAndKey[0];
+        String configKey = configUrlAndKey[1];
+        OkGo.<String>get(configUrl)
                 .execute(new AbsCallback<String>() {
                     @Override
                     public void onSuccess(Response<String> response) {
@@ -143,7 +143,7 @@ public class ApiConfig {
                         if (response.body() == null) {
                             result = "";
                         } else {
-                            result = response.body().string();
+                            result = ApiHelper.findResult(response.body().string(), configKey);
                         }
                         if (apiUrl.startsWith("clan")) {
                             result = clanContentFix(clanToAddress(apiUrl), result);
