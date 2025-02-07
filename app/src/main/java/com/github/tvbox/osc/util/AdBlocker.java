@@ -27,4 +27,7 @@ public class AdBlocker {
         return new WebResourceResponse("text/plain", "utf-8", new ByteArrayInputStream("".getBytes()));
     }
 
+    public static void clear() {
+        AD_HOSTS.clear();
+    }
 }
