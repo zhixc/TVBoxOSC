@@ -9,7 +9,6 @@ import com.github.catvod.crawler.JarLoader;
 import com.github.catvod.crawler.Spider;
 import com.github.tvbox.osc.base.App;
 import com.github.tvbox.osc.bean.LiveChannelGroup;
-import com.github.tvbox.osc.bean.IJKCode;
 import com.github.tvbox.osc.bean.LiveChannelItem;
 import com.github.tvbox.osc.bean.ParseBean;
 import com.github.tvbox.osc.bean.SourceBean;
@@ -53,7 +52,6 @@ public class ApiConfig {
     private List<LiveChannelGroup> liveChannelGroupList;
     private List<ParseBean> parseBeanList;
     private List<String> vipParseFlags;
-    private List<IJKCode> ijkCodes;
     private String spider = null;
 
     private SourceBean emptyHome = new SourceBean();
@@ -311,35 +309,6 @@ public class ApiConfig {
         for (JsonElement host : infoJson.getAsJsonArray("ads")) {
             AdBlocker.addAdHost(host.getAsString());
         }
-        // IJK解码配置
-        boolean foundOldSelect = false;
-        String ijkCodec = Hawk.get(HawkConfig.IJK_CODEC, "");
-        ijkCodes = new ArrayList<>();
-        for (JsonElement opt : infoJson.get("ijk").getAsJsonArray()) {
-            JsonObject obj = (JsonObject) opt;
-            String name = obj.get("group").getAsString();
-            LinkedHashMap<String, String> baseOpt = new LinkedHashMap<>();
-            for (JsonElement cfg : obj.get("options").getAsJsonArray()) {
-                JsonObject cObj = (JsonObject) cfg;
-                String key = cObj.get("category").getAsString() + "|" + cObj.get("name").getAsString();
-                String val = cObj.get("value").getAsString();
-                baseOpt.put(key, val);
-            }
-            IJKCode codec = new IJKCode();
-            codec.setName(name);
-            codec.setOption(baseOpt);
-            if (name.equals(ijkCodec) || TextUtils.isEmpty(ijkCodec)) {
-                codec.selected(true);
-                ijkCodec = name;
-                foundOldSelect = true;
-            } else {
-                codec.selected(false);
-            }
-            ijkCodes.add(codec);
-        }
-        if (!foundOldSelect && ijkCodes.size() > 0) {
-            ijkCodes.get(0).selected(true);
-        }
     }
 
     public void loadLives(JsonArray livesArray) {
@@ -461,23 +430,6 @@ public class ApiConfig {
 
     public List<LiveChannelGroup> getChannelGroupList() {
         return liveChannelGroupList;
-    }
-
-    public List<IJKCode> getIjkCodes() {
-        return ijkCodes;
-    }
-
-    public IJKCode getCurrentIJKCode() {
-        String codeName = Hawk.get(HawkConfig.IJK_CODEC, "");
-        return getIJKCodec(codeName);
-    }
-
-    public IJKCode getIJKCodec(String name) {
-        for (IJKCode code : ijkCodes) {
-            if (code.getName().equals(name))
-                return code;
-        }
-        return ijkCodes.get(0);
     }
 
     String clanToAddress(String lanLink) {
