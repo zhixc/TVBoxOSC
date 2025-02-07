@@ -334,13 +334,10 @@ public class PlayActivity extends BaseActivity {
         }
         try {
             if (!mVodPlayerCfg.has("pl")) {
-                mVodPlayerCfg.put("pl", Hawk.get(HawkConfig.PLAY_TYPE, 1));
+                mVodPlayerCfg.put("pl", Hawk.get(HawkConfig.PLAY_TYPE, 2));
             }
             if (!mVodPlayerCfg.has("pr")) {
                 mVodPlayerCfg.put("pr", Hawk.get(HawkConfig.PLAY_RENDER, 0));
-            }
-            if (!mVodPlayerCfg.has("ijk")) {
-                mVodPlayerCfg.put("ijk", Hawk.get(HawkConfig.IJK_CODEC, ""));
             }
             if (!mVodPlayerCfg.has("sc")) {
                 mVodPlayerCfg.put("sc", Hawk.get(HawkConfig.PLAY_SCALE, 0));
