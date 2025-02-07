@@ -148,11 +148,20 @@ public class ApiConfig {
                         if (apiUrl.startsWith("clan")) {
                             result = clanContentFix(clanToAddress(apiUrl), result);
                         }
+                        result = fixContentPath(apiUrl, result);
                         return result;
                     }
                 });
     }
 
+    String fixContentPath(String url, String content) {
+        if (content.contains("\"./")) {
+            if (!url.startsWith("http") && !url.startsWith("clan://")) url = "http://" + url;
+            if (url.startsWith("clan://")) url = clanToAddress(url);
+            content = content.replace("./", url.substring(0, url.lastIndexOf("/") + 1));
+        }
+        return content;
+    }
 
     public void loadJar(boolean useCache, String spider, LoadConfigCallback callback) {
         String[] urls = spider.split(";md5;");
@@ -238,7 +247,11 @@ public class ApiConfig {
             sb.setQuickSearch(DefaultConfig.safeJsonInt(obj, "quickSearch", 1));
             sb.setFilterable(DefaultConfig.safeJsonInt(obj, "filterable", 1));
             sb.setPlayerUrl(DefaultConfig.safeJsonString(obj, "playUrl", ""));
-            sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
+            if (obj.has("ext") && (obj.get("ext").isJsonObject() || obj.get("ext").isJsonArray())) {
+                sb.setExt(obj.get("ext").toString());
+            } else {
+                sb.setExt(DefaultConfig.safeJsonString(obj, "ext", ""));
+            }
             sb.setCategories(DefaultConfig.safeJsonStringList(obj, "categories"));
             if (firstSite == null)
                 firstSite = sb;
@@ -255,15 +268,17 @@ public class ApiConfig {
         // 需要使用vip解析的flag
         vipParseFlags = DefaultConfig.safeJsonStringList(infoJson, "flags");
         // 解析地址
-        for (JsonElement opt : infoJson.get("parses").getAsJsonArray()) {
-            JsonObject obj = (JsonObject) opt;
-            ParseBean pb = new ParseBean();
-            pb.setName(obj.get("name").getAsString().trim());
-            pb.setUrl(obj.get("url").getAsString().trim());
-            String ext = obj.has("ext") ? obj.get("ext").getAsJsonObject().toString() : "";
-            pb.setExt(ext);
-            pb.setType(DefaultConfig.safeJsonInt(obj, "type", 0));
-            parseBeanList.add(pb);
+        if (infoJson.has("parses")) {
+            for (JsonElement opt : infoJson.get("parses").getAsJsonArray()) {
+                JsonObject obj = (JsonObject) opt;
+                ParseBean pb = new ParseBean();
+                pb.setName(obj.get("name").getAsString().trim());
+                pb.setUrl(obj.get("url").getAsString().trim());
+                String ext = obj.has("ext") ? obj.get("ext").getAsJsonObject().toString() : "";
+                pb.setExt(ext);
+                pb.setType(DefaultConfig.safeJsonInt(obj, "type", 0));
+                parseBeanList.add(pb);
+            }
         }
         // 获取默认解析
         if (parseBeanList != null && parseBeanList.size() > 0) {
@@ -306,9 +321,8 @@ public class ApiConfig {
             th.printStackTrace();
         }
         // 广告地址
-        for (JsonElement host : infoJson.getAsJsonArray("ads")) {
-            AdBlocker.addAdHost(host.getAsString());
-        }
+        AdBlocker.clear();
+        for (String host : DefaultConfig.safeJsonStringList(infoJson, "ads")) AdBlocker.addAdHost(host);
     }
 
     public void loadLives(JsonArray livesArray) {
