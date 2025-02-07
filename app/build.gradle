@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    namespace 'com.github.tvbox.osc'
+    compileSdkVersion 35
 
     defaultConfig {
         applicationId 'com.github.tvbox.osc'
@@ -33,7 +34,7 @@ android {
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            minifyEnabled true
+            minifyEnabled false
 
             ndk {
                 abiFilters 'armeabi-v7a'
@@ -68,7 +69,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation files('libs\\thunder.jar')
+    implementation files('libs/thunder.jar')
+    implementation files('libs/xwalk_shared_library-23.53.589.4.aar')
 
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
     implementation 'androidx.room:room-runtime:2.3.0'
@@ -88,9 +90,6 @@ dependencies {
 
     implementation project(":player")
 
-    implementation('org.xwalk:xwalk_shared_library:23.53.589.4') {
-        exclude group: 'com.android.support'
-    }
     implementation 'com.lzy.net:okgo:3.0.4'
     // implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.owen:tv-recyclerview:3.0.0'
