@@ -223,6 +223,20 @@ public class VodController extends BaseController {
                 }
             }
         });
+        mPlayerSpeedBtn.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                try {
+                    mPlayerConfig.put("sp", 1.0f);
+                    updatePlayerCfgView();
+                    listener.updatePlayerCfg();
+                    mControlWrapper.setSpeed(1.0f);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
         mPlayerBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -269,6 +283,19 @@ public class VodController extends BaseController {
                 }
             }
         });
+        mPlayerTimeStartBtn.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                try {
+                    mPlayerConfig.put("st", 0);
+                    updatePlayerCfgView();
+                    listener.updatePlayerCfg();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
         mPlayerTimeSkipBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -284,6 +311,19 @@ public class VodController extends BaseController {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        mPlayerTimeSkipBtn.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                try {
+                    mPlayerConfig.put("et", 0);
+                    updatePlayerCfgView();
+                    listener.updatePlayerCfg();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
             }
         });
         mPlayerTimeStepBtn.setOnClickListener(new OnClickListener() {
