@@ -34,6 +34,9 @@ import xyz.doikki.videoplayer.util.PlayerUtils;
 
 import static xyz.doikki.videoplayer.util.PlayerUtils.stringForTime;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class VodController extends BaseController {
     public VodController(@NonNull @NotNull Context context) {
         super(context);
@@ -50,10 +53,14 @@ public class VodController extends BaseController {
                         break;
                     }
                     case 1002: { // 显示底部菜单
+                        mTopRoot1.setVisibility(VISIBLE);
+                        mTopRoot2.setVisibility(VISIBLE);
                         mBottomRoot.setVisibility(VISIBLE);
                         break;
                     }
                     case 1003: { // 隐藏底部菜单
+                        mTopRoot1.setVisibility(GONE);
+                        mTopRoot2.setVisibility(GONE);
                         mBottomRoot.setVisibility(GONE);
                         break;
                     }
@@ -82,9 +89,12 @@ public class VodController extends BaseController {
     TextView mProgressText;
     ImageView mProgressIcon;
     LinearLayout mBottomRoot;
+    LinearLayout mTopRoot1;
+    LinearLayout mTopRoot2;
     LinearLayout mParseRoot;
     TvRecyclerView mGridView;
     TextView mPlayTitle;
+    TextView mPlayLoadNetSpeedRightTop;
     TextView mNextBtn;
     TextView mPreBtn;
     TextView mPlayerScaleBtn;
@@ -95,17 +105,40 @@ public class VodController extends BaseController {
     TextView mPlayerTimeSkipBtn;
     //TextView mPlayerTimeStepBtn;
 
+    TextView mPlayPauseTime;
+    TextView mPlayLoadNetSpeed;
+    TextView mVideoSize;
+    private final Runnable myRunnable2 = new Runnable() {
+        @Override
+        public void run() {
+            Date date = new Date();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+            mPlayPauseTime.setText(timeFormat.format(date));
+            String speed = PlayerHelper.getDisplaySpeed(mControlWrapper.getTcpSpeed());
+            mPlayLoadNetSpeedRightTop.setText(speed);
+            mPlayLoadNetSpeed.setText(speed);
+            String width = Integer.toString(mControlWrapper.getVideoSize()[0]);
+            String height = Integer.toString(mControlWrapper.getVideoSize()[1]);
+            mVideoSize.setText("[ " + width + " X " + height +" ]");
+
+            mHandler.postDelayed(this, 1000);
+        }
+    };
+
     @Override
     protected void initView() {
         super.initView();
         mCurrentTime = findViewById(R.id.curr_time);
         mTotalTime = findViewById(R.id.total_time);
         mPlayTitle = findViewById(R.id.tv_info_name);
+        mPlayLoadNetSpeedRightTop = findViewById(R.id.tv_play_load_net_speed_right_top);
         mSeekBar = findViewById(R.id.seekBar);
         mProgressRoot = findViewById(R.id.tv_progress_container);
         mProgressIcon = findViewById(R.id.tv_progress_icon);
         mProgressText = findViewById(R.id.tv_progress_text);
         mBottomRoot = findViewById(R.id.bottom_container);
+        mTopRoot1 = findViewById(R.id.tv_top_l_container);
+        mTopRoot2 = findViewById(R.id.tv_top_r_container);
         mParseRoot = findViewById(R.id.parse_root);
         mGridView = findViewById(R.id.mGridView);
         mPlayerRetry = findViewById(R.id.play_retry);
@@ -117,6 +150,17 @@ public class VodController extends BaseController {
         mPlayerTimeStartBtn = findViewById(R.id.play_time_start);
         mPlayerTimeSkipBtn = findViewById(R.id.play_time_end);
         //mPlayerTimeStepBtn = findViewById(R.id.play_time_step);
+
+        mPlayPauseTime = findViewById(R.id.tv_sys_time);
+        mPlayLoadNetSpeed = findViewById(R.id.tv_play_load_net_speed);
+        mVideoSize = findViewById(R.id.tv_videosize);
+
+        mPlayPauseTime.post(new Runnable() {
+            @Override
+            public void run() {
+                mHandler.post(myRunnable2);
+            }
+        });
 
         mGridView.setLayoutManager(new V7LinearLayoutManager(getContext(), 0, false));
         ParseAdapter parseAdapter = new ParseAdapter();
@@ -495,15 +539,19 @@ public class VodController extends BaseController {
                 startProgress();
                 break;
             case VideoView.STATE_PAUSED:
+                mTopRoot1.setVisibility(GONE);
+                mTopRoot2.setVisibility(GONE);
                 break;
             case VideoView.STATE_ERROR:
                 listener.errReplay();
                 break;
             case VideoView.STATE_PREPARED:
             case VideoView.STATE_BUFFERED:
+                mPlayLoadNetSpeed.setVisibility(GONE);
                 break;
             case VideoView.STATE_PREPARING:
             case VideoView.STATE_BUFFERING:
+                mPlayLoadNetSpeed.setVisibility(VISIBLE);
                 break;
             case VideoView.STATE_PLAYBACK_COMPLETED:
                 listener.playNext(true);
